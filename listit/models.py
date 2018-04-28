@@ -11,7 +11,7 @@ class List(models.Model):
   slug = models.SlugField(max_length=60,editable=False)
 
   def __str__(self):
-    return '%s' % (self.name)
+    return '%s' % (self.title)
 
   class Meta:
     ordering = ['title']

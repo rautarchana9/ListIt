@@ -40,7 +40,7 @@ class SoftDeletionManager(models.Manager):
 
     def get_queryset(self):
         if self.alive_only:
-            return SoftDeletionQuerySet(self.model).filter(deleted_at=None)
+          return SoftDeletionQuerySet(self.model).filter(deleted_at=None)
         return SoftDeletionQuerySet(self.model)
 
     def hard_delete(self):

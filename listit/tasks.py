@@ -1,9 +1,9 @@
 from background_task import background
+from datetime import datetime, timedelta
 from listit.models import Task
 
 @background(schedule=60)
-def test_task(task_id):
-    task = Task.objects.get(pk=task_id)
-    print(task.STATUS_TYPE)
+def delete_outdated_tasks():
+    Task.all_objects.filter(deleted_at__lte=datetime.now()- timedelta(days=30) ).hard_delete()
 
-test_task(4)
+delete_outdated_tasks()

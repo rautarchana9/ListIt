@@ -1,12 +1,22 @@
 from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from listit.models import Task, Subtask
 from tastypie.authorization import Authorization
 from tastypie.utils import trailing_slash
+from tastypie import fields
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from haystack.query import SearchQuerySet
 from django.conf.urls import url, include
 from tastypie.exceptions import BadRequest
+from listit.custom_filter import ModelResourceCustom, custom_filter_group
+
+
+class SubTaskResource(ModelResource):
+    class Meta:
+        queryset = Subtask.objects.all()
+        resource_name = 'subtasks'
+
 
 class TaskResource(ModelResource):
     class Meta:
@@ -18,6 +28,7 @@ class TaskResource(ModelResource):
             }
         ordering = ['due_date']
         authorization = Authorization()
+        #subtask = fields.ToManyField(SubTaskResource, 'subtasks', full=True)
 
     def prepend_urls(self):
         return [
@@ -31,26 +42,6 @@ class TaskResource(ModelResource):
 
         # Do the query.
         sqs = SearchQuerySet().models(Task).load_all().auto_query(request.GET.get('q', ''))
-        #paginator = Paginator(request.GET, sqs, limit=20)
-
-        #try:
-        #    page = paginator.page()
-        #except InvalidPage:
-        #    raise Http404("Sorry, no results on that page.")
-
-        #objects = []
-
-        #for result in page.object_list:
-        #    bundle = self.build_bundle(obj=result.object, request=request)
-        #    bundle = self.full_dehydrate(bundle)
-        #    objects.append(bundle)
-
-        #object_list = {
-        #    'objects': objects,
-        #}
-
-        #self.log_throttled_access(request)
-        #return self.create_response(request, object_list) 
         paginator = self._meta.paginator_class(request.GET, sqs,
             resource_uri=self.get_resource_uri(), limit=self._meta.limit,
             max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
@@ -60,3 +51,14 @@ class TaskResource(ModelResource):
         to_be_serialized['objects'] = [self.full_dehydrate(bundle) for bundle in bundles]
         to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
         return self.create_response(request, to_be_serialized)
+
+class FilteredResource(ModelResourceCustom):
+    class Meta:
+        queryset = Task.objects.all()
+        allowed_methods = ['get']
+        resource_name = 'filters'
+        filtering = {
+            'due_date':ALL,
+        }
+        custom_filters = custom_filter_group
+        ordering = ['due_date']

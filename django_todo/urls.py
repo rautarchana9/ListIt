@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from tastypie.api import Api
-from listit.api.resources import TaskResource
+from listit.api.resources import TaskResource, SubTaskResource, FilteredResource
 
 v1_api = Api(api_name='v1')
 v1_api.register(TaskResource())
-
+v1_api.register(SubTaskResource())
+v1_api.register(FilteredResource())
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('listit/', include('listit.urls')),

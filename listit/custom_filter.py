@@ -49,7 +49,6 @@ def get_start_end(next=False):
 
 
 def custom_duedate(url_args):
-    """Build Custom filter to match age between a max and min if it is set"""
     try:
         duedate = url_args.pop('duedate')[0]
     except KeyError:

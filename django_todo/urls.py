@@ -18,12 +18,12 @@ from django.urls import path, include
 from tastypie.api import Api
 from listit.api.resources import TaskResource
 
-#v1_api = Api(api_name='v1')
-#v1_api.register(TaskResource())
-task_resource = TaskResource()
+v1_api = Api(api_name='v1')
+v1_api.register(TaskResource())
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('listit/', include('listit.urls')),
-    path('api/', include(task_resource.urls)),
+    path('api/', include(v1_api.urls)),
+    path('^search/', include('haystack.urls')),
 ]

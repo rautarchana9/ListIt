@@ -71,7 +71,7 @@ class Task(SoftDeletionModel):
         ("P", "Pending"),
         )
   title = models.CharField(max_length=60)
-  due_date = models.DateField(null=True, blank=True)
+  due_date = models.DateField(blank=False, null=True)
   todo_list = models.ForeignKey(List, on_delete=models.CASCADE, null=True)
   status = models.CharField(max_length=1, choices=STATUS_TYPE, null=True)
   def __str__(self):

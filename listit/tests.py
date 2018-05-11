@@ -26,4 +26,14 @@ class ListItTestCase(TestCase):
     response_obj = response.json()
     self.assertEqual(response.status_code, 200)
     self.assertEqual(len(response_obj.get('objects')),1)
-    
+  
+  def test_filter_this_week_tasks(self):
+    self.test_add_tasks()
+    response = self.client.get('/api/v1/filters/', data={"duedate":"this_week"})
+    response_obj = response.json()
+    today = date.today()
+    week_start = today - timedelta(days = today.weekday())
+    end = week_start + timedelta(days = 6)
+    count = (end - today).days + 1
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(len(response_obj.get('objects')),count)

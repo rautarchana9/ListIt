@@ -37,10 +37,17 @@ class ListItTestCase(TestCase):
     count = (end - today).days + 1
     self.assertEqual(response.status_code, 200)
     self.assertEqual(len(response_obj.get('objects')),count)
+
   def test_filter_next_week_tasks(self):
     self.test_add_tasks()
     response = self.client.get('/api/v1/filters/', data={"duedate":"next_week"})
     response_obj = response.json()
     self.assertEqual(response.status_code, 200)
     self.assertEqual(len(response_obj.get('objects')),7)
-    
+
+  def test_filter_overdue_tasks(self):
+    self.test_add_tasks()
+    response = self.client.get('/api/v1/filters/', data={"duedate":"overdue"})
+    response_obj = response.json()
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(len(response_obj.get('objects')),2)

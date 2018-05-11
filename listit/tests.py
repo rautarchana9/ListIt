@@ -1,4 +1,4 @@
-from tastypie.test import TestApiClient
+from tastypie.test import TestApiClient, ResourceTestCaseMixin  
 import json
 from datetime import date, timedelta
 from django.test import TestCase
@@ -51,3 +51,10 @@ class ListItTestCase(TestCase):
     response_obj = response.json()
     self.assertEqual(response.status_code, 200)
     self.assertEqual(len(response_obj.get('objects')),2)
+
+#class TaskResourceTest(ResourceTestCaseMixin, TestCase):
+#
+#  def test_search_tasks(self):
+#    response = self.api_client.get('/api/v1/tasks/search', format = 'json')
+#    self.assertValidJSONResponse(response)
+

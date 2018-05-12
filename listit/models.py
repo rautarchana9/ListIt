@@ -82,7 +82,7 @@ class Task(SoftDeletionModel):
 
 class Subtask(models.Model):
   title = models.CharField(max_length=200)
-  todo_note = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)
+  todo_task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)
 
   def __str__(self):
     return '%s' % (self.title)

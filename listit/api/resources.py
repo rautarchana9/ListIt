@@ -11,13 +11,6 @@ from django.conf.urls import url, include
 from tastypie.exceptions import BadRequest
 from listit.custom_filter import ModelResourceCustom, custom_filter_group
 
-
-class SubTaskResource(ModelResource):
-    class Meta:
-        queryset = Subtask.objects.all()
-        resource_name = 'subtasks'
-
-
 class TaskResource(ModelResource):
     class Meta:
         queryset = Task.objects.all()
@@ -51,6 +44,12 @@ class TaskResource(ModelResource):
         to_be_serialized['objects'] = [self.full_dehydrate(bundle) for bundle in bundles]
         to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
         return self.create_response(request, to_be_serialized)
+
+class SubTaskResource(ModelResource):
+    task = fields.ForeignKey(TaskResource, 'todo_task')
+    class Meta:
+        queryset = Subtask.objects.all()
+        resource_name = 'subtasks'
 
 class FilteredResource(ModelResourceCustom):
     class Meta:

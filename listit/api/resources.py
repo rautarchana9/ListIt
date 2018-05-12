@@ -50,6 +50,7 @@ class SubTaskResource(ModelResource):
     class Meta:
         queryset = Subtask.objects.all()
         resource_name = 'subtasks'
+        authorization = Authorization()
 
 class FilteredResource(ModelResourceCustom):
     class Meta:

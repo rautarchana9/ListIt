@@ -91,7 +91,7 @@ class ListItTestCase(ResourceTestCaseMixin, TestCase):
     self.assertEqual(self.deserialize(response)['status'], 'P')
     self.assertEqual(self.deserialize(response)['due_date'], ( (date.today() - timedelta(days=2) ).isoformat() ) )
  
-  def test_put_detail(self):
+  def test_put_task_detail(self):
     # Grab the current data & modify it slightly.
     self.test_add_tasks()
     original_data = self.deserialize(self.api_client.get('/api/v1/tasks/1/', format='json'))
@@ -103,5 +103,4 @@ class ListItTestCase(ResourceTestCaseMixin, TestCase):
     self.assertEqual(Task.objects.count(), 16)
     # Check for updated data.
     self.assertEqual(Task.objects.get(pk=1).status, 'C')
-    
 

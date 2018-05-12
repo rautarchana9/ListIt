@@ -3,9 +3,10 @@ import json
 from datetime import date, timedelta
 from django.test import TestCase
 
-class ListItTestCase(TestCase):
+class ListItTestCase(ResourceTestCaseMixin, TestCase):
   def setUp(self):
-      self.client = TestApiClient()
+    super(ListItTestCase, self).setUp()  
+    self.client = TestApiClient()
 
   def test_add_tasks(self):
     #curl --dump-header - -H "Content-Type: application/json" -X POST --data '{"title": "test task 9", "due_date":"2018-05-22T00:46:38", "status": "P" }' http://localhost:8000/api/v1/tasks/
@@ -18,8 +19,6 @@ class ListItTestCase(TestCase):
             'status': 'P',
             }
         )
-        #from ptpython.repl import embed
-        #embed(globals(), locals())
         due_date = due_date + timedelta(days=1)
         self.assertEqual(response.status_code, 201)
 
@@ -82,3 +81,11 @@ class ListItTestCase(TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertEqual(len(response_obj.get('objects')), 0)
 
+  def test_get_task_detail_json(self):
+    self.test_filter_today_tasks()
+    response = self.api_client.get('/api/v1/tasks/1/', format='json')
+    self.assertValidJSONResponse(response)
+    self.assertKeys(self.deserialize(response), ['title', 'due_date', 'status', 'resource_uri'])
+    self.assertEqual(self.deserialize(response)['title'], 'test task')
+    self.assertEqual(self.deserialize(response)['status'], 'P')
+    self.assertEqual(self.deserialize(response)['due_date'], ( (date.today() - timedelta(days=2) ).isoformat() ) )

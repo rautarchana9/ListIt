@@ -2,6 +2,7 @@ from tastypie.test import TestApiClient, ResourceTestCaseMixin
 import json
 from datetime import date, timedelta
 from django.test import TestCase
+from listit.models import Task
 
 class ListItTestCase(ResourceTestCaseMixin, TestCase):
   def setUp(self):
@@ -89,3 +90,18 @@ class ListItTestCase(ResourceTestCaseMixin, TestCase):
     self.assertEqual(self.deserialize(response)['title'], 'test task')
     self.assertEqual(self.deserialize(response)['status'], 'P')
     self.assertEqual(self.deserialize(response)['due_date'], ( (date.today() - timedelta(days=2) ).isoformat() ) )
+ 
+  def test_put_detail(self):
+    # Grab the current data & modify it slightly.
+    self.test_add_tasks()
+    original_data = self.deserialize(self.api_client.get('/api/v1/tasks/1/', format='json'))
+    new_data = original_data.copy()
+    new_data['status'] = 'C'
+    self.assertEqual(Task.objects.count(), 16)
+    self.assertHttpAccepted(self.api_client.put('/api/v1/tasks/1/', format='json', data=new_data))
+    # Make sure the count hasn't changed & we did an update.
+    self.assertEqual(Task.objects.count(), 16)
+    # Check for updated data.
+    self.assertEqual(Task.objects.get(pk=1).status, 'C')
+    
+
